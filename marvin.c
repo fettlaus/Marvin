@@ -303,14 +303,6 @@ void ir_detector() {
 
 }
 
-void check_timer() {
-
-}
-
-void add_timer() {
-
-}
-
 void set_motor(char m1, char m2, char m3, char sp1, char sp2, char sp3) {
 	motor_richtung(PORT_NW_MOTOR, m1);
 	motor_richtung(PORT_NO_MOTOR, m2);
