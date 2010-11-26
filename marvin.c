@@ -95,23 +95,7 @@ void AksenMain(void) {
 	}
 
 	while (1) {
-		if (dip_pin(1)) {// Funktion
-			//check_timer();running_to_the_wall
-			//sleep(200);
-			//lcd_cls();
-			//lcd_ubyte(analog(PORT_BALL_DETECTOR_N_C));
-
-
-			//Ausgabe
-			//lcd_cls();
-			//lcd_ubyte(analog(0));
-			//lcd_putchar(' ');
-			//lcd_ubyte(i_have_the_ball);
-			//lcd_ubyte(i_have_the_goal);
-			//sleep(100);
-			//Obere Ballerkennungssensor
-			//sleep(1);
-
+		if (dip_pin(1)) {
 
 			////////////////////////////////
 			//
@@ -119,6 +103,18 @@ void AksenMain(void) {
 			//
 			////////////////////////////////
 
+			/*TODO: universal Timer
+			 *
+			 * Prototype:
+			 * check_all_timer(); //checks and updates vars
+			 *
+			 *   //sets or resets new timer
+			 * if(condition){
+			 * reset_timer(time, var)
+			 * }
+			 *
+			 *
+			 */
 
 			if (analog(PORT_BALL_DETECTOR_TOP) < MAX_ANALOG_VALUE_DETECTOR_TOP) {
 				ball_last_detected = akt_time();
