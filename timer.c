@@ -19,7 +19,11 @@ void check_all_timer() {
 	}
 }
 
-void reset_timer(unsigned char index, unsigned long timeout, unsigned char *flag) {
-	timer_list[index].flag = flag;
-	timer_list[index].timeout = akt_time() + timeout;
+unsigned long reset_timer(unsigned char index, unsigned long timeout, unsigned char *flag) {
+	if(index < TIMER_NUM && index >= 0){
+		timer_list[index].flag = flag;
+		timer_list[index].timeout = akt_time() + timeout;
+		return timer_list[index].timeout;
+	}
+	return 0; //Error
 }

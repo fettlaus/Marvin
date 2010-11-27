@@ -23,8 +23,10 @@ void check_all_timer();
 /**
  * Reset timer "index" to zero and set "flag" to 1.
  * Set "flag" to 0 on first call of check_all_timer() after "timeout".
+ *
+ * @return time of expiration or 0 of Error
  */
-void reset_timer(unsigned char index, unsigned long timeout, unsigned char* flag);
+unsigned long reset_timer(unsigned char index, unsigned long timeout, unsigned char *flag);
 
 
 #endif /* TIMER_H_ */
