@@ -87,14 +87,15 @@ void AksenMain(void) {
 	char detected = FALSE;
 	pid_process_1 = process_start(ir_detector, 10);
 	//dir_n(10);
-	/*Einstellung der Torfrequenz*/
-	if (dip_pin(0) == 1) {
-		ir_goal_frequency = 4;
-	} else {
-		ir_goal_frequency = 5;
-	}
 
 	while (1) {
+			// Einstellung der Torfrequenz
+			if (dip_pin(0) == 1) {
+				ir_goal_frequency = 4;
+			} else {
+				ir_goal_frequency = 5;
+			}
+
 		if (dip_pin(1)) {
 
 			////////////////////////////////
