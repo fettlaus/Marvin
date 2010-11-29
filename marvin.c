@@ -19,6 +19,7 @@ unsigned char i_have_to_stop_s = FALSE;
 unsigned char i_have_the_goal = FALSE;
 unsigned char running_to_the_wall = FALSE;
 unsigned char walking_on_the_wall = FALSE;
+
 unsigned long ball_last_detected = 0;
 unsigned long goal_last_detected = 0;
 unsigned long ball_last_found_nw = 0;
@@ -27,7 +28,6 @@ unsigned long ball_last_found_no = 0;
 unsigned char pid_process_1, pid_process_2;
 unsigned char ir_goal_frequency = 4;
 void AksenMain(void) {
-	//char detected = FALSE;
 	pid_process_1 = process_start(ir_detector, 10);
 
 	while (1) {
@@ -45,19 +45,6 @@ void AksenMain(void) {
 			//  SENSORIK
 			//
 			////////////////////////////////
-
-			/*TODO: universal Timer
-			 *
-			 * Prototype:
-			 * check_all_timer(); //checks and updates vars
-			 *
-			 *   //sets or resets new timer
-			 * if(condition){
-			 * reset_timer(time, var)
-			 * }
-			 *
-			 *
-			 */
 
 			check_all_timer();
 
@@ -137,6 +124,7 @@ void AksenMain(void) {
 			}//if
 		} else if ((analog(PORT_BALL_DETECTOR_N_C)
 				< MAX_ANALOG_VALUE_DETECTOR_C)) {
+			//TODO: deprecated timer. Sollten hier nicht beschrieben werden.
 			ball_last_found_no = 0;
 			ball_last_found_nw = 0;
 			dir_n(5);
