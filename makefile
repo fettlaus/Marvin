@@ -5,7 +5,7 @@
 include config.mak
 
 # C-File to compile
-TARGET_C = $(wildcard *.c)
+TARGET_C = marvin.c
 TARGET = $(patsubst %.c,%,$(TARGET_C))
 
 # Perhaps more objects
