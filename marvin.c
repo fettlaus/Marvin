@@ -4,65 +4,8 @@
 #include <stub.h>
 
 #include "marvin.h"
-
-#define BALL_TIMEOUT 1000
-#define GOAL_TIMEOUT 1000
-#define BALL_NO_TIMEOUT 800
-#define BALL_NW_TIMEOUT 800
-
-//Ports
-#define PORT_NO_MOTOR 1
-#define PORT_S_MOTOR 3
-#define PORT_NW_MOTOR 2
-
-#define DISTANCE
-//Analog
-#define PORT_BALL_DETECTOR_N_C 0
-#define PORT_BALL_DETECTOR_NO 2
-#define PORT_BALL_DETECTOR_NW 7
-#define PORT_BALL_DETECTOR_TOP 5
-
-#define PORT_SHARP_L 11
-#define PORT_SHARP_R 9
-
-//Analog values to to resolve an action
-#define MAX_ANALOG_VALUE_DETECTOR_C  200 
-#define MAX_ANALOG_VALUE_DETECTOR_NO 200
-#define MAX_ANALOG_VALUE_DETECTOR_NW 200 
-#define MAX_ANALOG_VALUE_DETECTOR_TOP 200
-
-#define TURNDISTANCE 140
-//Digital
-#define PORT_GOAL_DETECTOR_L 13
-#define PORT_GOAL_DETECTOR_C 14
-#define PORT_GOAL_DETECTOR_R 15
-
-//Movements
-#define dir_stop() set_motor(0,0,0,0,0,0);
-#define dir_n(sp) set_motor(1,0,0,sp,sp,0);
-#define dir_no(sp) set_motor(1,0,0,sp,0,sp);
-#define dir_so(sp) set_motor(0,1,0,0,sp,sp);
-#define dir_s(sp) set_motor(0,1,0,sp,sp,0);
-#define dir_sw(sp) set_motor(0,0,1,sp,0,sp);
-#define dir_nw(sp) set_motor(0,0,1,0,sp,sp);
-
-#define trn_c(sp) set_motor(1,1,1,sp,sp,sp);
-#define trn_c_n(sp) set_motor(0,0,0,0,0,sp);
-#define trn_c_no(sp) set_motor(1,0,1,sp,0,sp);
-#define trn_c_so(sp) set_motor(0,0,0,sp,0,0);
-#define trn_c_s(sp) set_motor(1,1,0,sp,sp,0);
-#define trn_c_sw(sp) set_motor(0,1,0,0,sp,0);
-#define trn_c_nw(sp) set_motor(0,1,1,0,sp,sp);
-#define trn_cc(sp) set_motor(0,0,0,sp,sp,sp);
-#define trn_cc_n(sp) set_motor(0,0,1,0,0,sp);
-#define trn_cc_no(sp) set_motor(0,0,0,sp,0,sp);
-#define trn_cc_so(sp) set_motor(1,0,0,sp,0,0);
-#define trn_cc_s(sp) set_motor(0,0,0,sp,sp,0);
-#define trn_cc_sw(sp) set_motor(0,0,0,0,sp,0);
-#define trn_cc_nw(sp) set_motor(0,0,0,0,sp,sp);
-
-#define FALSE 0
-#define TRUE 1
+#include "motor.h"
+#include "config.h"
 
 unsigned char ir_goal_detected_l = FALSE;
 unsigned char ir_goal_detected_c = FALSE;
@@ -79,14 +22,12 @@ unsigned long ball_last_detected = 0;
 unsigned long goal_last_detected = 0;
 unsigned long ball_last_found_nw = 0;
 unsigned long ball_last_found_no = 0;
-void ir_detector(void);
+
 unsigned char pid_process_1, pid_process_2;
 unsigned char ir_goal_frequency = 4;
 void AksenMain(void) {
-	//add_timer(trn_cc_sw);
-	char detected = FALSE;
+	//char detected = FALSE;
 	pid_process_1 = process_start(ir_detector, 10);
-	//dir_n(10);
 
 	while (1) {
 			// Einstellung der Torfrequenz
@@ -302,13 +243,4 @@ void ir_detector() {
 
 	} while (1);
 
-}
-
-void set_motor(char m1, char m2, char m3, char sp1, char sp2, char sp3) {
-	motor_richtung(PORT_NW_MOTOR, m1);
-	motor_richtung(PORT_NO_MOTOR, m2);
-	motor_richtung(PORT_S_MOTOR, m3);
-	motor_pwm(PORT_NW_MOTOR, sp1);
-	motor_pwm(PORT_NO_MOTOR, sp2);
-	motor_pwm(PORT_S_MOTOR, sp3);
 }
