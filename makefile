@@ -9,7 +9,7 @@ TARGET_C = marvin.c
 TARGET = $(patsubst %.c,%,$(TARGET_C))
 
 # Perhaps more objects
-OBJS = $(TARGET).rel
+OBJS = $(TARGET).rel motor.rel timer.rel
 
 # --No need to change anything after this line -------------------------------
 

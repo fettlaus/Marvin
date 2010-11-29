@@ -65,7 +65,7 @@ void AksenMain(void) {
 				if (i_have_the_ball == FALSE) {
 					i_have_to_stop_s = TRUE;
 				}
-				reset_timer(0,BALL_TIMEOUT,i_have_the_ball);
+				reset_timer(0,BALL_TIMEOUT,&i_have_the_ball);
 			}
 
 			if (i_have_the_ball == FALSE) {
@@ -73,17 +73,17 @@ void AksenMain(void) {
 			}
 			// Anfrage das Mittleren Sensorts (Torsuche)
 			if (ir_goal_detected_c == TRUE) {
-				reset_timer(1,GOAL_TIMEOUT,i_have_the_goal);
+				reset_timer(1,GOAL_TIMEOUT,&i_have_the_goal);
 			}
 
 			//Ball NO Erkennungdir_s(10);
 			if (analog(PORT_BALL_DETECTOR_NO) < MAX_ANALOG_VALUE_DETECTOR_NO) {
-				reset_timer(2,BALL_NO_TIMEOUT,ball_detected_no);
+				reset_timer(2,BALL_NO_TIMEOUT,&ball_detected_no);
 			}
 
 			//Ball NW Erkennung
 			if (analog(PORT_BALL_DETECTOR_NW) < MAX_ANALOG_VALUE_DETECTOR_NW) {
-				reset_timer(2,BALL_NW_TIMEOUT,ball_detected_nw);
+				reset_timer(2,BALL_NW_TIMEOUT,&ball_detected_nw);
 			}
 
 			////////////////////////////////
