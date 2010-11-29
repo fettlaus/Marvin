@@ -14,7 +14,6 @@ void check_all_timer() {
 	unsigned long cur_time = akt_time();
 	for (i = 0; i < TIMER_NUM; i++) {
 		if(cur_time > timer_list[i].timeout)
-			//TODO: Pointerfehler beheben. Bloeder Mist!
 			*(timer_list[i].flag) = 0;
 	}
 }
