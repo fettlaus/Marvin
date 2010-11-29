@@ -6,6 +6,7 @@
 #include "marvin.h"
 #include "motor.h"
 #include "config.h"
+#include "timer.h"
 
 unsigned char ir_goal_detected_l = FALSE;
 unsigned char ir_goal_detected_c = FALSE;
@@ -58,36 +59,31 @@ void AksenMain(void) {
 			 *
 			 */
 
+			check_all_timer();
+
 			if (analog(PORT_BALL_DETECTOR_TOP) < MAX_ANALOG_VALUE_DETECTOR_TOP) {
-				ball_last_detected = akt_time();
 				if (i_have_the_ball == FALSE) {
 					i_have_to_stop_s = TRUE;
 				}
-				i_have_the_ball = TRUE;
-			} else if ((ball_last_detected + BALL_TIMEOUT) < akt_time()) {
+				reset_timer(0,BALL_TIMEOUT,i_have_the_ball);
+			}
+
+			if (i_have_the_ball == FALSE) {
 				walking_on_the_wall = FALSE;
-				i_have_the_ball = FALSE;
 			}
 			// Anfrage das Mittleren Sensorts (Torsuche)
 			if (ir_goal_detected_c == TRUE) {
-				goal_last_detected = akt_time();
-				i_have_the_goal = TRUE;
-			} else if ((goal_last_detected + GOAL_TIMEOUT) < akt_time()) {
-				i_have_the_goal = FALSE;
+				reset_timer(1,GOAL_TIMEOUT,i_have_the_goal);
 			}
+
 			//Ball NO Erkennungdir_s(10);
 			if (analog(PORT_BALL_DETECTOR_NO) < MAX_ANALOG_VALUE_DETECTOR_NO) {
-				ball_detected_no = TRUE;
-				ball_last_found_no = akt_time();
-			} else if ((ball_last_found_no + BALL_NO_TIMEOUT) < akt_time()) {
-				ball_detected_no = FALSE;
+				reset_timer(2,BALL_NO_TIMEOUT,ball_detected_no);
 			}
+
 			//Ball NW Erkennung
 			if (analog(PORT_BALL_DETECTOR_NW) < MAX_ANALOG_VALUE_DETECTOR_NW) {
-				ball_detected_nw = TRUE;
-				ball_last_found_nw = akt_time();
-			} else if ((ball_last_found_nw + BALL_NW_TIMEOUT) < akt_time()) {
-				ball_detected_nw = FALSE;
+				reset_timer(2,BALL_NW_TIMEOUT,ball_detected_nw);
 			}
 
 			////////////////////////////////
