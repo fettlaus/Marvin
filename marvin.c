@@ -16,7 +16,7 @@ unsigned char ir_goal_detected_r = FALSE;
 // internal Sensor Vars
 unsigned char sensor_ball_detected_no = FALSE;
 unsigned char sensor_ball_detected_nw = FALSE;
-volatile unsigned char sensor_i_have_the_ball = FALSE;
+unsigned char sensor_i_have_the_ball = FALSE;
 unsigned char sensor_i_have_the_goal = FALSE;
 unsigned char sensor_left_wall_is_near = FALSE;
 unsigned char sensor_right_wall_is_near = FALSE;
@@ -115,9 +115,10 @@ void AksenMain(void) {
 
 			if(state_running_to_the_wall){
 				if(sensor_left_wall_is_near)
-					state_walking_right == TRUE;
+					state_walking_right = TRUE;
 				else if(sensor_right_wall_is_near)
-					state_walking_left == TRUE;
+					state_walking_left = TRUE;
+
 			}
 
 			if(state_running_to_the_wall){
