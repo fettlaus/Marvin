@@ -8,10 +8,8 @@
 #include "config.h"
 #include "timer.h"
 
-// Sensor Vars
-unsigned char ir_goal_detected_l = FALSE;
-unsigned char ir_goal_detected_c = FALSE;
-unsigned char ir_goal_detected_r = FALSE;
+// IR-Sensor Vars
+unsigned char ir_goal_detected = FALSE;
 
 // internal Sensor Vars
 unsigned char sensor_ball_detected_no = FALSE;
@@ -20,15 +18,17 @@ unsigned char sensor_i_have_the_ball = FALSE;
 unsigned char sensor_i_have_the_goal = FALSE;
 unsigned char sensor_left_wall_is_near = FALSE;
 unsigned char sensor_right_wall_is_near = FALSE;
+unsigned char sensor_left_bot_detector = FALSE;
+unsigned char sensor_right_bot_detector = FALSE;
 
-// Zustand Vars
-unsigned char state_i_have_to_stop_s = FALSE;
-unsigned char state_running_to_the_wall = FALSE;
-unsigned char state_walking_on_the_wall = FALSE;
+//main states
 unsigned char state_walking_right = FALSE;
 unsigned char state_walking_left = FALSE;
 unsigned char state_searching_ball = FALSE;
+unsigned char state_running_to_the_wall = FALSE;
 
+// Zustand Vars
+unsigned char state_i_have_to_stop_s = FALSE;
 
 // @deprecated
 unsigned long ball_last_detected = 0;
@@ -65,7 +65,7 @@ void AksenMain(void) {
 
 
 			// Anfrage das Mittleren Sensorts (Torsuche)
-			if (ir_goal_detected_c == TRUE) {
+			if (ir_goal_detected == TRUE) {
 				reset_timer(1,GOAL_TIMEOUT,&sensor_i_have_the_goal);
 			}
 
@@ -92,37 +92,51 @@ void AksenMain(void) {
 				sensor_right_wall_is_near = FALSE;
 			}
 
+			if(analog(PORT_SHARP_O) >= SHARP_O_BOT_DETECTED)
+				sensor_right_bot_detector = TRUE;
+			else
+				sensor_right_bot_detector = FALSE;
+
+			if(analog(PORT_SHARP_W) >= SHARP_W_BOT_DETECTED)
+				sensor_left_bot_detector = TRUE;
+			else
+				sensor_left_bot_detector = FALSE;
+
 			////////////////////////////////
 			//
 			//  ZUSTAENDE
 			////////////////////////////////
 
-			//reset main states
-
-
-			state_searching_ball = FALSE;
-			state_running_to_the_wall = FALSE;
-			state_walking_right == FALSE;
-			state_walking_left == FALSE;
-
-			if(sensor_i_have_the_ball == TRUE){
-				state_running_to_the_wall = TRUE;
-			}
-
-			if (sensor_i_have_the_ball == FALSE) {
+			// fallback if we lost the ball
+			if(!sensor_i_have_the_ball){
+				reset_states();
 				state_searching_ball = TRUE;
-			}
-
-			if(state_running_to_the_wall){
-				if(sensor_left_wall_is_near)
+			// found the ball, now search for the wall
+			}else if(state_searching_ball && sensor_i_have_the_ball){
+				reset_states();
+				state_running_to_the_wall = TRUE;
+			}else if(state_running_to_the_wall){
+				// found wall to the left, walk right
+				if(sensor_left_wall_is_near){
+					reset_states();
 					state_walking_right = TRUE;
-				else if(sensor_right_wall_is_near)
+				// found wall to the right, walk left
+				}else if(sensor_right_wall_is_near){
+					reset_states();
 					state_walking_left = TRUE;
-
-			}
-
-			if(state_running_to_the_wall){
-				trn_c(1);
+				}
+			}else if(state_walking_left){
+				// change direction if other bot or own goal detected
+				if(sensor_left_bot_detector || ir_goal_detected){
+					reset_states();
+					state_walking_right = TRUE;
+				}
+			}else if(state_walking_right){
+				// change direction if other bot or own goal detected
+				if(sensor_right_bot_detector || ir_goal_detected){
+					reset_states();
+					state_walking_left = TRUE;
+				}
 			}
 
 			////////////////////////////////
@@ -166,13 +180,7 @@ void AksenMain(void) {
 			}//if
 			dir_n(10);
 
-		}else if (sensor_i_have_the_ball){
-			if (ir_goal_detected_l == TRUE) {
-				trn_c_n(6);
-			} else if (ir_goal_detected_r == TRUE) {
-				trn_cc_n(6);
-			}//if
-		} else if ((analog(PORT_BALL_DETECTOR_N_C)
+		}else if ((analog(PORT_BALL_DETECTOR_N_C)
 				< MAX_ANALOG_VALUE_DETECTOR_C)) {
 			//TODO: deprecated timer. Sollten hier nicht beschrieben werden.
 			ball_last_found_no = 0;
@@ -211,9 +219,11 @@ void AksenMain(void) {
 		} else if (!dip_pin(2) && dip_pin(3)) {
 			lcd_cls();
 			lcd_puts("G:");
-			lcd_ubyte(ir_goal_detected_l);
-			lcd_ubyte(ir_goal_detected_c);
-			lcd_ubyte(ir_goal_detected_r);
+			lcd_ubyte(ir_goal_detected);
+			lcd_puts(" ");
+			lcd_ubyte(analog(PORT_SHARP_O));
+			lcd_puts(" ");
+			lcd_ubyte(analog(PORT_SHARP_W));
 			lcd_setxy(1, 0);
 			lcd_puts("B:");
 			lcd_ubyte(sensor_i_have_the_ball);
@@ -246,9 +256,7 @@ void ir_detector() {
 		mod_ir1_takt(ir_goal_frequency);
 		mod_ir2_takt(ir_goal_frequency);
 
-		ir_goal_detected_l = FALSE;
-		ir_goal_detected_c = FALSE;
-		ir_goal_detected_r = FALSE;
+		ir_goal_detected = FALSE;
 		finishtime = akt_time() + IR_PROC_WAIT;
 		process_hog();
 		while (akt_time() < finishtime) {
@@ -256,13 +264,13 @@ void ir_detector() {
 			led_received_l = mod_ir1_status();
 			led_received_r = mod_ir2_status();
 			if (led_received_c >= IR_PROC_PERIODS_FOR_OK) {
-				ir_goal_detected_c = TRUE;
+				ir_goal_detected = TRUE;
 				break;
 			} else if (led_received_l >= IR_PROC_PERIODS_FOR_OK) {
-				ir_goal_detected_l = TRUE;
+				ir_goal_detected = TRUE;
 				break;
 			} else if (led_received_r >= IR_PROC_PERIODS_FOR_OK) {
-				ir_goal_detected_r = TRUE;
+				ir_goal_detected = TRUE;
 				break;
 			}
 		}

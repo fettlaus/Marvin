@@ -28,6 +28,9 @@
 #define PORT_SHARP_L 11
 #define PORT_SHARP_R 9
 
+#define PORT_SHARP_O 10
+#define PORT_SHARP_W 8
+
 //Analog values to to resolve an action
 #define MAX_ANALOG_VALUE_DETECTOR_C  200
 #define MAX_ANALOG_VALUE_DETECTOR_NO 200
@@ -35,6 +38,9 @@
 #define MAX_ANALOG_VALUE_DETECTOR_TOP 200
 
 #define TURNDISTANCE 140
+
+#define SHARP_O_BOT_DETECTED 180
+#define SHARP_W_BOT_DETECTED 180
 //Digital
 #define PORT_GOAL_DETECTOR_L 13
 #define PORT_GOAL_DETECTOR_C 14
