@@ -14,6 +14,7 @@ unsigned char ir_goal_detected = FALSE;
 // internal Sensor Vars
 unsigned char sensor_ball_detected_no = FALSE;
 unsigned char sensor_ball_detected_nw = FALSE;
+unsigned char sensor_ball_detected_n = FALSE;
 unsigned char sensor_i_have_the_ball = FALSE;
 unsigned char sensor_i_have_the_goal = FALSE;
 unsigned char sensor_left_wall_is_near = FALSE;
@@ -83,27 +84,11 @@ void AksenMain(void) {
 			}
 
 			// Sensors
-			if (analog(PORT_SHARP_L) > TURNDISTANCE) {
-				sensor_left_wall_is_near = TRUE;
-			} else {
-				sensor_left_wall_is_near = FALSE;
-			}
-
-			if (analog(PORT_SHARP_R) > TURNDISTANCE) {
-				sensor_right_wall_is_near = TRUE;
-			} else {
-				sensor_right_wall_is_near = FALSE;
-			}
-
-			if (analog(PORT_SHARP_O) >= SHARP_O_BOT_DETECTED)
-				sensor_right_bot_detector = TRUE;
-			else
-				sensor_right_bot_detector = FALSE;
-
-			if (analog(PORT_SHARP_W) >= SHARP_W_BOT_DETECTED)
-				sensor_left_bot_detector = TRUE;
-			else
-				sensor_left_bot_detector = FALSE;
+			sensor_ball_detected_n =  (analog(PORT_BALL_DETECTOR_N) < MAX_ANALOG_VALUE_DETECTOR_N) ? TRUE : FALSE;
+			sensor_left_wall_is_near = (analog(PORT_SHARP_L) > TURNDISTANCE) ? TRUE : FALSE;
+			sensor_right_wall_is_near = (analog(PORT_SHARP_R) > TURNDISTANCE) ? TRUE : FALSE;
+			sensor_right_bot_detector = (analog(PORT_SHARP_O) >= SHARP_O_BOT_DETECTED) ? TRUE : FALSE;
+			sensor_left_bot_detector = (analog(PORT_SHARP_W) >= SHARP_W_BOT_DETECTED) ? TRUE : FALSE;
 
 			sensor_left_sharp = analog(PORT_SHARP_L);
 			sensor_right_sharp = analog(PORT_SHARP_R);
@@ -154,8 +139,27 @@ void AksenMain(void) {
 			//  AKTORIK
 			////////////////////////////////
 
-			if (state_running_to_the_wall) {
-
+			if (state_searching_ball){
+				if(sensor_ball_detected_n){
+					dir_n(5);
+				}else if (sensor_left_wall_is_near) {
+					trn_c(5);
+				} else if (sensor_right_wall_is_near) {
+					trn_cc(5);
+				} else if (sensor_ball_detected_no) {
+					trn_c_nw(5);
+				} else if (sensor_ball_detected_nw) {
+					trn_cc_no(5);
+				} else {
+					dir_n(10);
+				}
+				//				if (analog(PORT_SHARP_L) > TURNDISTANCE) {
+				//					dir_nw(5);
+				//				}else if (analog(PORT_SHARP_R) > TURNDISTANCE) {
+				//					dir_nw(5);
+				//				}//if
+			}else if (state_running_to_the_wall) {
+				dir_n(10);
 				//				if (analog(PORT_SHARP_L) > TURNDISTANCE) {
 				//					dir_nw(5);
 				//				}else if (analog(PORT_SHARP_R) > TURNDISTANCE) {
@@ -187,40 +191,6 @@ void AksenMain(void) {
 			 }
 			 }*/
 
-		} else if (analog(PORT_SHARP_L) > TURNDISTANCE) {
-			//trn_c(5);
-
-		} else if (analog(PORT_SHARP_R) > TURNDISTANCE) {
-			//trn_cc(5);
-
-		} else if (sensor_i_have_the_ball && sensor_i_have_the_goal) {
-			dir_n(10);
-
-			//Falls der Ball direkt vorn ist, geradeaus fahren
-		} else if (sensor_i_have_the_ball && !state_running_to_the_wall) {
-			if (state_i_have_to_stop_s == TRUE) {
-				dir_s(10);
-				sleep(300);
-				state_i_have_to_stop_s = FALSE;
-			}//if
-			dir_n(10);
-
-		} else if ((analog(PORT_BALL_DETECTOR_N_C)
-						< MAX_ANALOG_VALUE_DETECTOR_C)) {
-			//TODO: deprecated timer. Sollten hier nicht beschrieben werden.
-			ball_last_found_no = 0;
-			ball_last_found_nw = 0;
-			dir_n(5);
-
-		} else if (sensor_ball_detected_no) {
-			trn_c_nw(5);
-
-		} else if (sensor_ball_detected_nw) {
-			trn_cc_no(5);
-
-		} else {
-			if (!sensor_ball_detected_no && !sensor_ball_detected_nw)
-			dir_n(10);
 		}
 
 		sleep(8);
@@ -231,7 +201,7 @@ void AksenMain(void) {
 		lcd_puts("W:");
 		lcd_ubyte(analog(PORT_BALL_DETECTOR_NW));
 		lcd_puts("C:");
-		lcd_ubyte(analog(PORT_BALL_DETECTOR_N_C));
+		lcd_ubyte(analog(PORT_BALL_DETECTOR_N));
 		lcd_puts("O:");
 		lcd_ubyte(analog(PORT_BALL_DETECTOR_NO));
 		lcd_setxy(1, 0);
