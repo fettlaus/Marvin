@@ -1,12 +1,7 @@
 #ifndef MARVIN_H
 #define MARVIN_H
 
-#define reset_states(){\
-			state_searching_ball = FALSE;\
-			state_running_to_the_wall = FALSE;\
-			state_walking_right = FALSE;\
-			state_walking_left = FALSE;\
-}
+void reset_states(void);
 
 struct motortimer{
 	unsigned long time;

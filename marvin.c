@@ -102,7 +102,7 @@ void AksenMain(void) {
 			else
 				sensor_left_bot_detector = FALSE;
 
-			////////////////////////////////
+			////////////////////////////////void resetStates(void)
 			//
 			//  ZUSTAENDE
 			////////////////////////////////
@@ -111,10 +111,12 @@ void AksenMain(void) {
 			if(!sensor_i_have_the_ball){
 				reset_states();
 				state_searching_ball = TRUE;
+				dir_n(10);
 			// found the ball, now search for the wall
 			}else if(state_searching_ball && sensor_i_have_the_ball){
 				reset_states();
 				state_running_to_the_wall = TRUE;
+				dir_n(10);
 			}else if(state_running_to_the_wall){
 				// found wall to the left, walk right
 				if(sensor_left_wall_is_near){
@@ -126,12 +128,21 @@ void AksenMain(void) {
 					state_walking_left = TRUE;
 				}
 			}else if(state_walking_left){
+
+
 				// change direction if other bot or own goal detected
 				if(sensor_left_bot_detector || ir_goal_detected){
 					reset_states();
 					state_walking_right = TRUE;
 				}
 			}else if(state_walking_right){
+
+				if(sensor_right_wall_is_near){
+					trn_c_no(5);
+				}else{
+					trn_cc_n(5);
+				}
+
 				// change direction if other bot or own goal detected
 				if(sensor_right_bot_detector || ir_goal_detected){
 					reset_states();
@@ -247,7 +258,9 @@ void ir_detector() {
 	unsigned char led_received_c;
 	unsigned char led_received_r;
 
-	mod_ir0_maxfehler(IR_PROC_MAX_ERROR_PER_PERIOD);
+	mod_ir0_maxfehler(IR_PROC_MAX_ERROR_PER_PERIOD);{\
+
+	}
 	mod_ir1_maxfehler(IR_PROC_MAX_ERROR_PER_PERIOD);
 	mod_ir2_maxfehler(IR_PROC_MAX_ERROR_PER_PERIOD);
 
@@ -261,7 +274,9 @@ void ir_detector() {
 		process_hog();
 		while (akt_time() < finishtime) {
 			led_received_c = mod_ir0_status();
-			led_received_l = mod_ir1_status();
+			led_received_l = mod_ir1_status();{\
+
+			}
 			led_received_r = mod_ir2_status();
 			if (led_received_c >= IR_PROC_PERIODS_FOR_OK) {
 				ir_goal_detected = TRUE;
@@ -282,7 +297,16 @@ void ir_detector() {
 		(mod_ir2_status()) = 0;
 
 		sleep(20);
+		{\
 
+		}
 	} while (1);
 
+}
+
+void resetStates(){
+	state_searching_ball = FALSE;
+	state_running_to_the_wall = FALSE;
+	state_walking_right = FALSE;
+	state_walking_left = FALSE;
 }
