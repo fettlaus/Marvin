@@ -17,6 +17,9 @@
 #define dir_sw(sp) set_motor(0,0,1,sp,0,sp);
 #define dir_nw(sp) set_motor(0,0,1,0,sp,sp);
 
+#define dir_o(sp) set_motor(1,1,0,(sp/2),(sp/2),sp)
+#define dir_w(sp) set_motor(0,0,1,(sp/2),(sp/2),sp)
+
 #define trn_c(sp) set_motor(1,1,1,sp,sp,sp);
 #define trn_c_n(sp) set_motor(0,0,0,0,0,sp);
 #define trn_c_no(sp) set_motor(1,0,1,sp,0,sp);
