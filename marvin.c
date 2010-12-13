@@ -80,11 +80,15 @@ void AksenMain(void) {
 
 			//Ball NW Erkennung
 			if (analog(PORT_BALL_DETECTOR_NW) < MAX_ANALOG_VALUE_DETECTOR_NW) {
-				reset_timer(2, BALL_NW_TIMEOUT, &sensor_ball_detected_nw);
+				reset_timer(3, BALL_NW_TIMEOUT, &sensor_ball_detected_nw);
+			}
+
+			//Ball N Erkennung
+			if(analog(PORT_BALL_DETECTOR_N) < MAX_ANALOG_VALUE_DETECTOR_N){
+				reset_timer(4, BALL_N_TIMEOUT, &sensor_ball_detected_n);
 			}
 
 			// Sensors
-			sensor_ball_detected_n =  (analog(PORT_BALL_DETECTOR_N) < MAX_ANALOG_VALUE_DETECTOR_N) ? TRUE : FALSE;
 			sensor_left_wall_is_near = (analog(PORT_SHARP_L) > TURNDISTANCE) ? TRUE : FALSE;
 			sensor_right_wall_is_near = (analog(PORT_SHARP_R) > TURNDISTANCE) ? TRUE : FALSE;
 			sensor_right_bot_detector = (analog(PORT_SHARP_O) >= SHARP_O_BOT_DETECTED) ? TRUE : FALSE;
@@ -159,7 +163,7 @@ void AksenMain(void) {
 				//					dir_nw(5);
 				//				}//if
 			}else if (state_running_to_the_wall) {
-				dir_n(10);
+				dir_n(5);
 				//				if (analog(PORT_SHARP_L) > TURNDISTANCE) {
 				//					dir_nw(5);
 				//				}else if (analog(PORT_SHARP_R) > TURNDISTANCE) {

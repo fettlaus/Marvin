@@ -13,6 +13,7 @@
 #define GOAL_TIMEOUT 1000
 #define BALL_NO_TIMEOUT 800
 #define BALL_NW_TIMEOUT 800
+#define BALL_N_TIMEOUT 100
 
 //Ports
 #define PORT_NO_MOTOR 1
