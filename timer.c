@@ -9,7 +9,7 @@
 
 struct timer timer_list[10];
 
-void check_all_timer() {
+void timer_check() {
 	int i = 0;
 	unsigned long cur_time = akt_time();
 	for (i = 0; i < TIMER_NUM; i++) {
@@ -18,7 +18,7 @@ void check_all_timer() {
 	}
 }
 
-unsigned long reset_timer(unsigned char index, unsigned long timeout, unsigned char *flag) {
+unsigned long timer_reset(unsigned char index, unsigned long timeout, unsigned char *flag) {
 	if(index < TIMER_NUM){
 		*flag = 1;
 		timer_list[index].flag = flag;

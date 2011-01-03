@@ -18,15 +18,15 @@ struct timer{
 /**
  * Function to check all timers in the list and set set appropriate vars
  */
-void check_all_timer();
+void timer_check();
 
 /**
  * Reset timer "index" to zero and set "flag" to 1.
- * Set "flag" to 0 on first call of check_all_timer() after "timeout".
+ * Set "flag" to 0 on first call of timer_check() after "timeout".
  *
  * @return time of expiration or 0 of Error
  */
-unsigned long reset_timer(unsigned char index, unsigned long timeout, unsigned char *flag);
+unsigned long timer_reset(unsigned char index, unsigned long timeout, unsigned char *flag);
 
 
 #endif /* TIMER_H_ */

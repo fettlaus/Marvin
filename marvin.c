@@ -62,30 +62,30 @@ void AksenMain(void) {
 			//
 			////////////////////////////////
 			// Timer
-			check_all_timer();
+			timer_check();
 
 			if (analog(PORT_BALL_DETECTOR_TOP) < MAX_ANALOG_VALUE_DETECTOR_TOP) {
-				reset_timer(0, BALL_TIMEOUT, &sensor_i_have_the_ball);
+				timer_reset(0, BALL_TIMEOUT, &sensor_i_have_the_ball);
 			}
 
 			// Anfrage das Mittleren Sensorts (Torsuche)
 			if (ir_goal_detected == TRUE) {
-				reset_timer(1, GOAL_TIMEOUT, &sensor_i_have_the_goal);
+				timer_reset(1, GOAL_TIMEOUT, &sensor_i_have_the_goal);
 			}
 
 			//Ball NO Erkennungdir_s(10);
 			if (analog(PORT_BALL_DETECTOR_NO) < MAX_ANALOG_VALUE_DETECTOR_NO) {
-				reset_timer(2, BALL_NO_TIMEOUT, &sensor_ball_detected_no);
+				timer_reset(2, BALL_NO_TIMEOUT, &sensor_ball_detected_no);
 			}
 
 			//Ball NW Erkennung
 			if (analog(PORT_BALL_DETECTOR_NW) < MAX_ANALOG_VALUE_DETECTOR_NW) {
-				reset_timer(3, BALL_NW_TIMEOUT, &sensor_ball_detected_nw);
+				timer_reset(3, BALL_NW_TIMEOUT, &sensor_ball_detected_nw);
 			}
 
 			//Ball N Erkennung
 			if(analog(PORT_BALL_DETECTOR_N) < MAX_ANALOG_VALUE_DETECTOR_N){
-				reset_timer(4, BALL_N_TIMEOUT, &sensor_ball_detected_n);
+				timer_reset(4, BALL_N_TIMEOUT, &sensor_ball_detected_n);
 			}
 
 			// Sensors
