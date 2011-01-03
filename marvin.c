@@ -29,7 +29,7 @@ unsigned char internal_sharp_difference = 0;
 //main states
 unsigned char state_walking_right = FALSE;
 unsigned char state_walking_left = FALSE;
-unsigned char state_searching_ball = FALSE;
+unsigned char state_searching_ball = TRUE;
 unsigned char state_running_to_the_wall = FALSE;
 
 // Zustand Vars
@@ -246,9 +246,6 @@ void ir_detector() {
 	unsigned char led_received_r;
 
 	mod_ir0_maxfehler(IR_PROC_MAX_ERROR_PER_PERIOD);
-	{
-
-	}
 	mod_ir1_maxfehler(IR_PROC_MAX_ERROR_PER_PERIOD);
 	mod_ir2_maxfehler(IR_PROC_MAX_ERROR_PER_PERIOD);
 
@@ -263,9 +260,6 @@ void ir_detector() {
 		while (akt_time() < finishtime) {
 			led_received_c = mod_ir0_status();
 			led_received_l = mod_ir1_status();
-			{
-
-			}
 			led_received_r = mod_ir2_status();
 			if (led_received_c >= IR_PROC_PERIODS_FOR_OK) {
 				ir_goal_detected = TRUE;
