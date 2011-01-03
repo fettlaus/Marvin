@@ -100,8 +100,8 @@ void AksenMain(void) {
 			internal_sharp_difference = (sensor_right_sharp > sensor_left_sharp) ? sensor_right_sharp
 					- sensor_left_sharp : sensor_left_sharp - sensor_right_sharp;
 
-			////////////////////////////////void resetStates(void)
-			//trn_cc_n(5);
+			////////////////////////////////
+			//
 			//  ZUSTAENDE
 			////////////////////////////////
 
@@ -114,7 +114,7 @@ void AksenMain(void) {
 				reset_states();
 				state_running_to_the_wall = TRUE;
 			} else if (state_running_to_the_wall) {
-				// found wall to the left, walk righstate_walking_rightt
+				// found wall to the left, walk right
 				if (sensor_left_wall_is_near) {
 					reset_states();
 					state_walking_right = TRUE;

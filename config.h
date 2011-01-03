@@ -16,7 +16,7 @@
 #define BALL_N_TIMEOUT 100
 
 //Ports
-#define PORT_NO_MOTOR 1
+#define PORT_NO_MOTOR 0
 #define PORT_S_MOTOR 3
 #define PORT_NW_MOTOR 2
 
