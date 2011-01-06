@@ -35,12 +35,6 @@ unsigned char state_running_to_the_wall = FALSE;
 // Zustand Vars
 unsigned char state_i_have_to_stop_s = FALSE;
 
-// @deprecated
-unsigned long ball_last_detected = 0;
-unsigned long goal_last_detected = 0;
-unsigned long ball_last_found_nw = 0;
-unsigned long ball_last_found_no = 0;
-
 unsigned char pid_process_1, pid_process_2;
 unsigned char ir_goal_frequency = 4;
 void AksenMain(void) {
