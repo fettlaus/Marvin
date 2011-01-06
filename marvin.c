@@ -19,8 +19,8 @@ unsigned char sensor_i_have_the_ball = FALSE;
 unsigned char sensor_i_have_the_goal = FALSE;
 unsigned char sensor_left_wall_is_near = FALSE;
 unsigned char sensor_right_wall_is_near = FALSE;
-unsigned char sensor_left_bot_detector = FALSE;
-unsigned char sensor_right_bot_detector = FALSE;
+unsigned char sensor_left_wall_detector = FALSE;
+unsigned char sensor_right_wall_detector = FALSE;
 
 unsigned char sensor_left_sharp = 0;
 unsigned char sensor_right_sharp = 0;
@@ -87,10 +87,10 @@ void AksenMain(void) {
 					= (analog(PORT_SHARP_L) > TURNDISTANCE) ? TRUE : FALSE;
 			sensor_right_wall_is_near
 					= (analog(PORT_SHARP_R) > TURNDISTANCE) ? TRUE : FALSE;
-			sensor_right_bot_detector = (analog(PORT_SHARP_O)
-					>= SHARP_O_BOT_DETECTED) ? TRUE : FALSE;
-			sensor_left_bot_detector = (analog(PORT_SHARP_W)
-					>= SHARP_W_BOT_DETECTED) ? TRUE : FALSE;
+			sensor_right_wall_detector = (analog(PORT_SHARP_O)
+					>= SHARP_O_WALL_DETECTED) ? TRUE : FALSE;
+			sensor_left_wall_detector = (analog(PORT_SHARP_W)
+					>= SHARP_W_WALL_DETECTED) ? TRUE : FALSE;
 
 			sensor_left_sharp = analog(PORT_SHARP_L);
 			sensor_right_sharp = analog(PORT_SHARP_R);
@@ -124,15 +124,16 @@ void AksenMain(void) {
 					state_walking_left = TRUE;
 				}
 			} else if (state_walking_left) {
+				// TODO: Wait 1.5 - 2 sec and check distance to wall again
 				// change direction if other bot or own goal detected
-				if (sensor_left_bot_detector || ir_goal_detected) {
+				if (sensor_left_wall_detector || ir_goal_detected) {
 					reset_states();
 					state_walking_right = TRUE;
 				}
 			} else if (state_walking_right) {
 
 				// change direction if other bot or own goal detected
-				if (sensor_right_bot_detector || ir_goal_detected) {
+				if (sensor_right_wall_detector || ir_goal_detected) {
 					reset_states();
 					state_walking_left = TRUE;
 				}
@@ -177,19 +178,19 @@ void AksenMain(void) {
 				// TODO: fine-tune walking parameters
 				if (internal_sharp_difference > MAX_WALKING_DIFFERENCE) {
 					if (sensor_left_sharp > sensor_right_sharp) {
-						trn_cc(4);
+						trn_cc(3);
 					} else {
-						trn_c(4);
+						trn_c(3);
 					}
 				} else if (sensor_left_sharp < MAX_WALKING_DISTANCE) {
-					dir_n(5);
+					dir_n(4);
 				} else if (sensor_left_sharp > MIN_WALKING_DISTANCE) {
-					dir_s(5);
+					dir_s(4);
 				} else {
 					if (state_walking_left)
-						dir_w(10);
+						dir_w(5);
 						else
-						dir_o(10);
+						dir_o(5);
 				}
 
 				/*if(analog(PORT_SHARP_R) > TURNDISTANCE || analog(PORT_SHARP_L) > TURNDISTANCE){
