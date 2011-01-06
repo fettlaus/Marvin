@@ -7,7 +7,7 @@
 #include <stub.h>
 #include "timer.h"
 
-struct timer timer_list[10];
+struct timer timer_list[TIMER_NUM];
 
 void timer_check() {
 	int i = 0;
