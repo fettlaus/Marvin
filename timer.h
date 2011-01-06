@@ -10,7 +10,7 @@
 
 #define TIMER_NUM 10
 
-struct timer{
+struct timer {
 	unsigned long timeout;
 	unsigned char *flag;
 };
@@ -26,7 +26,7 @@ void timer_check();
  *
  * @return time of expiration or 0 of Error
  */
-unsigned long timer_reset(unsigned char index, unsigned long timeout, unsigned char *flag);
-
+unsigned long timer_reset(unsigned char index, unsigned long timeout,
+		unsigned char *flag);
 
 #endif /* TIMER_H_ */

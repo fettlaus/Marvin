@@ -78,21 +78,27 @@ void AksenMain(void) {
 			}
 
 			//Ball N Erkennung
-			if(analog(PORT_BALL_DETECTOR_N) < MAX_ANALOG_VALUE_DETECTOR_N){
+			if (analog(PORT_BALL_DETECTOR_N) < MAX_ANALOG_VALUE_DETECTOR_N) {
 				timer_reset(4, BALL_N_TIMEOUT, &sensor_ball_detected_n);
 			}
 
 			// Sensors
-			sensor_left_wall_is_near = (analog(PORT_SHARP_L) > TURNDISTANCE) ? TRUE : FALSE;
-			sensor_right_wall_is_near = (analog(PORT_SHARP_R) > TURNDISTANCE) ? TRUE : FALSE;
-			sensor_right_bot_detector = (analog(PORT_SHARP_O) >= SHARP_O_BOT_DETECTED) ? TRUE : FALSE;
-			sensor_left_bot_detector = (analog(PORT_SHARP_W) >= SHARP_W_BOT_DETECTED) ? TRUE : FALSE;
+			sensor_left_wall_is_near
+					= (analog(PORT_SHARP_L) > TURNDISTANCE) ? TRUE : FALSE;
+			sensor_right_wall_is_near
+					= (analog(PORT_SHARP_R) > TURNDISTANCE) ? TRUE : FALSE;
+			sensor_right_bot_detector = (analog(PORT_SHARP_O)
+					>= SHARP_O_BOT_DETECTED) ? TRUE : FALSE;
+			sensor_left_bot_detector = (analog(PORT_SHARP_W)
+					>= SHARP_W_BOT_DETECTED) ? TRUE : FALSE;
 
 			sensor_left_sharp = analog(PORT_SHARP_L);
 			sensor_right_sharp = analog(PORT_SHARP_R);
 
-			internal_sharp_difference = (sensor_right_sharp > sensor_left_sharp) ? sensor_right_sharp
-					- sensor_left_sharp : sensor_left_sharp - sensor_right_sharp;
+			internal_sharp_difference
+					= (sensor_right_sharp > sensor_left_sharp) ? sensor_right_sharp
+							- sensor_left_sharp
+							: sensor_left_sharp - sensor_right_sharp;
 
 			////////////////////////////////
 			//
@@ -137,10 +143,10 @@ void AksenMain(void) {
 			//  AKTORIK
 			////////////////////////////////
 
-			if (state_searching_ball){
-				if(sensor_ball_detected_n){
+			if (state_searching_ball) {
+				if (sensor_ball_detected_n) {
 					dir_n(5);
-				}else if (sensor_left_wall_is_near) {
+				} else if (sensor_left_wall_is_near) {
 					trn_c(5);
 				} else if (sensor_right_wall_is_near) {
 					trn_cc(5);
@@ -156,7 +162,7 @@ void AksenMain(void) {
 				//				}else if (analog(PORT_SHARP_R) > TURNDISTANCE) {
 				//					dir_nw(5);
 				//				}//if
-			}else if (state_running_to_the_wall) {
+			} else if (state_running_to_the_wall) {
 				dir_n(5);
 				//				if (analog(PORT_SHARP_L) > TURNDISTANCE) {
 				//					dir_nw(5);
@@ -164,68 +170,68 @@ void AksenMain(void) {
 				//					dir_nw(5);
 				//				}//if
 			} else if (state_walking_left || state_walking_right) {
-				if(internal_sharp_difference > MAX_WALKING_DIFFERENCE){
-					if(sensor_left_sharp > sensor_right_sharp){
+				if (internal_sharp_difference > MAX_WALKING_DIFFERENCE) {
+					if (sensor_left_sharp > sensor_right_sharp) {
 						trn_cc(4);
-					}else{
+					} else {
 						trn_c(4);
 					}
-				}else if(sensor_left_sharp < MAX_WALKING_DISTANCE){
+				} else if (sensor_left_sharp < MAX_WALKING_DISTANCE) {
 					dir_n(5);
-				}else if(sensor_left_sharp > MIN_WALKING_DISTANCE){
+				} else if (sensor_left_sharp > MIN_WALKING_DISTANCE) {
 					dir_s(5);
-				}else{
-					if(state_walking_left)
+				} else {
+					if (state_walking_left)
 						dir_w(10);
-					else
+						else
 						dir_o(10);
 				}
 
-			/*if(analog(PORT_SHARP_R) > TURNDISTANCE || analog(PORT_SHARP_L) > TURNDISTANCE){
-			 if(analog(PORT_SHARP_R) > analog(PORT_SHARP_L)){
-			 trn_cc_n(5);
-			 }else{
-			 trn_cc_s(5);
-			 }
-			 }*/
+				/*if(analog(PORT_SHARP_R) > TURNDISTANCE || analog(PORT_SHARP_L) > TURNDISTANCE){
+				 if(analog(PORT_SHARP_R) > analog(PORT_SHARP_L)){
+				 trn_cc_n(5);
+				 }else{
+				 trn_cc_s(5);
+				 }
+				 }*/
 
-		}
+			}
 
-		sleep(8);
+			sleep(8);
 
-	}//if dip pin1
-	if (!dip_pin(2) && !dip_pin(3)) {
-		lcd_cls();
-		lcd_puts("W:");
-		lcd_ubyte(analog(PORT_BALL_DETECTOR_NW));
-		lcd_puts("C:");
-		lcd_ubyte(analog(PORT_BALL_DETECTOR_N));
-		lcd_puts("O:");
-		lcd_ubyte(analog(PORT_BALL_DETECTOR_NO));
-		lcd_setxy(1, 0);
-		lcd_puts("L:");
-		lcd_ubyte(analog(PORT_SHARP_L));
-		lcd_puts("R:");
-		lcd_ubyte(analog(PORT_SHARP_R));
-		lcd_puts("T:");
-		lcd_ubyte(analog(PORT_BALL_DETECTOR_TOP));
-		sleep(100);
-	} else if (!dip_pin(2) && dip_pin(3)) {
-		lcd_cls();
-		lcd_puts("G:");
-		lcd_ubyte(ir_goal_detected);
-		lcd_puts(" ");
-		lcd_ubyte(analog(PORT_SHARP_O));
-		lcd_puts(" ");
-		lcd_ubyte(analog(PORT_SHARP_W));
-		lcd_setxy(1, 0);
-		lcd_puts("B:");
-		lcd_ubyte(sensor_i_have_the_ball);
-		lcd_puts("G:");
-		lcd_ubyte(sensor_i_have_the_goal);
-		sleep(100);
-	}//if dip pin 2&3
-}//while
+		}//if dip pin1
+		if (!dip_pin(2) && !dip_pin(3)) {
+			lcd_cls();
+			lcd_puts("W:");
+			lcd_ubyte(analog(PORT_BALL_DETECTOR_NW));
+			lcd_puts("C:");
+			lcd_ubyte(analog(PORT_BALL_DETECTOR_N));
+			lcd_puts("O:");
+			lcd_ubyte(analog(PORT_BALL_DETECTOR_NO));
+			lcd_setxy(1, 0);
+			lcd_puts("L:");
+			lcd_ubyte(analog(PORT_SHARP_L));
+			lcd_puts("R:");
+			lcd_ubyte(analog(PORT_SHARP_R));
+			lcd_puts("T:");
+			lcd_ubyte(analog(PORT_BALL_DETECTOR_TOP));
+			sleep(100);
+		} else if (!dip_pin(2) && dip_pin(3)) {
+			lcd_cls();
+			lcd_puts("G:");
+			lcd_ubyte(ir_goal_detected);
+			lcd_puts(" ");
+			lcd_ubyte(analog(PORT_SHARP_O));
+			lcd_puts(" ");
+			lcd_ubyte(analog(PORT_SHARP_W));
+			lcd_setxy(1, 0);
+			lcd_puts("B:");
+			lcd_ubyte(sensor_i_have_the_ball);
+			lcd_puts("G:");
+			lcd_ubyte(sensor_i_have_the_goal);
+			sleep(100);
+		}//if dip pin 2&3
+	}//while
 
 }//main
 
