@@ -25,15 +25,18 @@ unsigned char sensor_right_wall_detector = FALSE;
 unsigned char sensor_left_sharp = 0;
 unsigned char sensor_right_sharp = 0;
 unsigned char internal_sharp_difference = 0;
+unsigned char internal_obstacle_timeout = 0;
 
 //main states
 unsigned char state_walking_right = FALSE;
 unsigned char state_walking_left = FALSE;
 unsigned char state_searching_ball = TRUE;
 unsigned char state_running_to_the_wall = FALSE;
+unsigned char state_obstacle_left_wait = FALSE;
+unsigned char state_obstacle_right_wait = FALSE;
+unsigned char state_obstacle_left_turn = FALSE;
+unsigned char state_obstacle_right_turn = FALSE;
 
-// Zustand Vars
-unsigned char state_i_have_to_stop_s = FALSE;
 
 unsigned char pid_process_1, pid_process_2;
 unsigned char ir_goal_frequency = 4;
@@ -109,10 +112,15 @@ void AksenMain(void) {
 			if (!sensor_i_have_the_ball) {
 				reset_states();
 				state_searching_ball = TRUE;
-				// found the ball, now search for the wall
+
+				/////////////////////////////
+				// Suche den Ball!
 			} else if (state_searching_ball && sensor_i_have_the_ball) {
 				reset_states();
 				state_running_to_the_wall = TRUE;
+
+				////////////////////////////
+				// Laufe auf die Wand zu
 			} else if (state_running_to_the_wall) {
 				// found wall to the left, walk right
 				if (sensor_left_wall_is_near) {
@@ -123,20 +131,78 @@ void AksenMain(void) {
 					reset_states();
 					state_walking_left = TRUE;
 				}
+
+				//////////////////////////////////////
+				// Laufe nach links an der Wand entlang
 			} else if (state_walking_left) {
 				// TODO: Wait 1.5 - 2 sec and check distance to wall again
 				// change direction if other bot or own goal detected
-				if (sensor_left_wall_detector || ir_goal_detected) {
+				if (sensor_left_wall_detector) {
+					reset_states();
+					state_obstacle_left_wait = TRUE;
+					timer_reset(5, OBSTACLE_WAIT_TIMEOUT,
+							&internal_obstacle_timeout);
+				} else if (ir_goal_detected) {
 					reset_states();
 					state_walking_right = TRUE;
 				}
+
+				///////////////////////////////////////
+				// Laufe nach rechts an der Wand entlang
 			} else if (state_walking_right) {
 
 				// change direction if other bot or own goal detected
-				if (sensor_right_wall_detector || ir_goal_detected) {
+				if (sensor_right_wall_detector) {
+					reset_states();
+					state_obstacle_right_wait = TRUE;
+					timer_reset(5, OBSTACLE_WAIT_TIMEOUT,
+							&internal_obstacle_timeout);
+				} else if (ir_goal_detected) {
 					reset_states();
 					state_walking_left = TRUE;
 				}
+
+				//////////////////////////////////////////////////
+				// Warte darauf, dass Hindernis links verschwindet
+			} else if (state_obstacle_left_wait) {
+				if (!internal_obstacle_timeout) {
+					if (sensor_left_wall_detector) {
+						reset_states();
+						state_obstacle_left_turn = TRUE;
+						timer_reset(5, OBSTACLE_TURN_TIMEOUT,
+								&internal_obstacle_timeout);
+					} else {
+						reset_states();
+						state_walking_left = TRUE;
+					}
+				}
+
+				///////////////////////////////////////////////////
+				// Warte darauf, dass Hindernis rechts verschwindet
+			} else if (state_obstacle_right_wait) {
+				if (!internal_obstacle_timeout) {
+					if (sensor_right_wall_detector) {
+						reset_states();
+						state_obstacle_right_turn = TRUE;
+						timer_reset(5, OBSTACLE_TURN_TIMEOUT,
+								&internal_obstacle_timeout);
+					} else {
+						reset_states();
+						state_walking_right = TRUE;
+					}
+				}
+
+				/////////////////////////////////////
+				// Drehe dich um das Hindernis links
+			} else if (state_obstacle_left_turn && !internal_obstacle_timeout) {
+				reset_states();
+				state_walking_left = TRUE;
+
+				/////////////////////////////////////
+				//Drehe dich um das Hindernis rechts
+			} else if (state_obstacle_right_turn && !internal_obstacle_timeout) {
+				reset_states();
+				state_walking_right = TRUE;
 			}
 
 			////////////////////////////////
@@ -200,7 +266,12 @@ void AksenMain(void) {
 				 trn_cc_s(5);
 				 }
 				 }*/
-
+			} else if (state_obstacle_left_wait || state_obstacle_right_wait) {
+				dir_stop();
+			} else if (state_obstacle_left_turn){
+				trn_cc(5);
+			} else if (state_obstacle_right_turn) {
+				trn_c(5);
 			}
 			// TODO: why is this here?
 			sleep(8);
@@ -296,4 +367,8 @@ void reset_states() {
 	state_running_to_the_wall = FALSE;
 	state_walking_right = FALSE;
 	state_walking_left = FALSE;
+	state_obstacle_left_turn = FALSE;
+	state_obstacle_right_turn = FALSE;
+	state_obstacle_left_wait = FALSE;
+	state_obstacle_right_wait = FALSE;
 }
