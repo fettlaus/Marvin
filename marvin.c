@@ -67,7 +67,7 @@ void AksenMain(void) {
 				timer_reset(1, GOAL_TIMEOUT, &sensor_i_have_the_goal);
 			}
 
-			//Ball NO Erkennungdir_s(10);
+			//Ball NO Erkennung
 			if (analog(PORT_BALL_DETECTOR_NO) < MAX_ANALOG_VALUE_DETECTOR_NO) {
 				timer_reset(2, BALL_NO_TIMEOUT, &sensor_ball_detected_no);
 			}
@@ -145,6 +145,8 @@ void AksenMain(void) {
 
 			if (state_searching_ball) {
 				if (sensor_ball_detected_n) {
+					sensor_ball_detected_no = 0;
+					sensor_ball_detected_nw = 0;
 					dir_n(5);
 				} else if (sensor_left_wall_is_near) {
 					trn_c(5);
@@ -163,6 +165,8 @@ void AksenMain(void) {
 				//					dir_nw(5);
 				//				}//if
 			} else if (state_running_to_the_wall) {
+				// TODO: avoid own goal while searching for wall
+				// TODO: intelligent search for next wall
 				dir_n(5);
 				//				if (analog(PORT_SHARP_L) > TURNDISTANCE) {
 				//					dir_nw(5);
@@ -170,6 +174,7 @@ void AksenMain(void) {
 				//					dir_nw(5);
 				//				}//if
 			} else if (state_walking_left || state_walking_right) {
+				// TODO: fine-tune walking parameters
 				if (internal_sharp_difference > MAX_WALKING_DIFFERENCE) {
 					if (sensor_left_sharp > sensor_right_sharp) {
 						trn_cc(4);
@@ -196,7 +201,7 @@ void AksenMain(void) {
 				 }*/
 
 			}
-
+			// TODO: why is this here?
 			sleep(8);
 
 		}//if dip pin1
@@ -280,9 +285,7 @@ void ir_detector() {
 		(mod_ir2_status()) = 0;
 
 		sleep(20);
-		{
 
-		}
 	} while (1);
 
 }
