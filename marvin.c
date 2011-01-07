@@ -24,6 +24,8 @@ unsigned char sensor_right_wall_detector = FALSE;
 
 unsigned char sensor_left_sharp = 0;
 unsigned char sensor_right_sharp = 0;
+unsigned char sensor_west_sharp = 0;
+unsigned char sensor_east_sharp = 0;
 unsigned char internal_sharp_difference = 0;
 unsigned char internal_obstacle_timeout = 0;
 
@@ -32,6 +34,7 @@ unsigned char state_walking_right = FALSE;
 unsigned char state_walking_left = FALSE;
 unsigned char state_searching_ball = TRUE;
 unsigned char state_running_to_the_wall = FALSE;
+unsigned char state_calibrating_the_wall = FALSE;
 unsigned char state_obstacle_left_wait = FALSE;
 unsigned char state_obstacle_right_wait = FALSE;
 unsigned char state_obstacle_left_turn = FALSE;
@@ -85,18 +88,20 @@ void AksenMain(void) {
 				timer_reset(4, BALL_N_TIMEOUT, &sensor_ball_detected_n);
 			}
 
+			sensor_left_sharp = analog(PORT_SHARP_L);
+			sensor_right_sharp = analog(PORT_SHARP_R);
+			sensor_east_sharp = analog(PORT_SHARP_O);
+			sensor_west_sharp = analog(PORT_SHARP_W);
+
 			// Sensors
 			sensor_left_wall_is_near
 					= (analog(PORT_SHARP_L) > TURNDISTANCE) ? TRUE : FALSE;
 			sensor_right_wall_is_near
 					= (analog(PORT_SHARP_R) > TURNDISTANCE) ? TRUE : FALSE;
-			sensor_right_wall_detector = (analog(PORT_SHARP_O)
+			sensor_right_wall_detector = (sensor_east_sharp
 					>= SHARP_O_WALL_DETECTED) ? TRUE : FALSE;
-			sensor_left_wall_detector = (analog(PORT_SHARP_W)
+			sensor_left_wall_detector = (sensor_west_sharp
 					>= SHARP_W_WALL_DETECTED) ? TRUE : FALSE;
-
-			sensor_left_sharp = analog(PORT_SHARP_L);
-			sensor_right_sharp = analog(PORT_SHARP_R);
 
 			internal_sharp_difference
 					= (sensor_right_sharp > sensor_left_sharp) ? sensor_right_sharp
@@ -123,15 +128,22 @@ void AksenMain(void) {
 				// Laufe auf die Wand zu
 			} else if (state_running_to_the_wall) {
 				// found wall to the left, walk right
-				if (sensor_left_wall_is_near) {
+				if (sensor_left_wall_is_near || sensor_right_wall_is_near) {
 					reset_states();
-					state_walking_right = TRUE;
-					// found wall to the right, walk left
-				} else if (sensor_right_wall_is_near) {
-					reset_states();
-					state_walking_left = TRUE;
+					state_calibrating_the_wall = TRUE;
 				}
 
+				//////////////////////////////////
+				// An der Wand ausrichten
+			} else if (state_calibrating_the_wall) {
+				if (internal_sharp_difference < MAX_WALKING_DIFFERENCE) {
+					reset_states();
+					if (sensor_east_sharp > sensor_west_sharp){
+						state_walking_right = TRUE;
+					}else{
+						state_walking_left = TRUE;
+					}
+				}
 				//////////////////////////////////////
 				// Laufe nach links an der Wand entlang
 			} else if (state_walking_left) {
@@ -239,36 +251,36 @@ void AksenMain(void) {
 				//					dir_nw(5);
 				//				}else if (analog(PORT_SHARP_R) > TURNDISTANCE) {
 				//					dir_nw(5);
-				//				}//if
-			} else if (state_walking_left || state_walking_right) {
-				// TODO: fine-tune walking parameters
-				if (internal_sharp_difference > MAX_WALKING_DIFFERENCE) {
-					if (sensor_left_sharp > sensor_right_sharp) {
-						trn_cc(3);
-					} else {
-						trn_c(3);
-					}
-				} else if (sensor_left_sharp < MAX_WALKING_DISTANCE) {
-					dir_n(4);
-				} else if (sensor_left_sharp > MIN_WALKING_DISTANCE) {
-					dir_s(4);
+				//}//if
+
+			} else if (state_calibrating_the_wall) {
+				if (sensor_left_sharp > sensor_right_sharp) {
+					trn_cc(2);
 				} else {
-					if (state_walking_left)
-						dir_w(5);
-						else
-						dir_o(5);
+					trn_c(2);
 				}
 
-				/*if(analog(PORT_SHARP_R) > TURNDISTANCE || analog(PORT_SHARP_L) > TURNDISTANCE){
-				 if(analog(PORT_SHARP_R) > analog(PORT_SHARP_L)){
-				 trn_cc_n(5);
-				 }else{
-				 trn_cc_s(5);
-				 }
-				 }*/
+			} else if (state_walking_left) {
+				if (sensor_left_sharp < MAX_WALKING_DISTANCE) {
+					dir_nw(4);
+				} else if (sensor_left_sharp > MIN_WALKING_DISTANCE) {
+					dir_sw(4);
+				} else {
+					dir_w(6);
+				}
+
+			} else if (state_walking_right) {
+				if (sensor_left_sharp < MAX_WALKING_DISTANCE) {
+					dir_no(4);
+				} else if (sensor_left_sharp > MIN_WALKING_DISTANCE) {
+					dir_so(4);
+				} else {
+					dir_o(6);
+				}
+
 			} else if (state_obstacle_left_wait || state_obstacle_right_wait) {
 				dir_stop();
-			} else if (state_obstacle_left_turn){
+			} else if (state_obstacle_left_turn) {
 				trn_cc(5);
 			} else if (state_obstacle_right_turn) {
 				trn_c(5);
@@ -371,4 +383,5 @@ void reset_states() {
 	state_obstacle_right_turn = FALSE;
 	state_obstacle_left_wait = FALSE;
 	state_obstacle_right_wait = FALSE;
+	state_calibrating_the_wall = FALSE;
 }
