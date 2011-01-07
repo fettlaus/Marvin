@@ -40,7 +40,6 @@ unsigned char state_obstacle_right_wait = FALSE;
 unsigned char state_obstacle_left_turn = FALSE;
 unsigned char state_obstacle_right_turn = FALSE;
 
-
 unsigned char pid_process_1, pid_process_2;
 unsigned char ir_goal_frequency = 4;
 void AksenMain(void) {
@@ -94,10 +93,10 @@ void AksenMain(void) {
 			sensor_west_sharp = analog(PORT_SHARP_W);
 
 			// Sensors
-			sensor_left_wall_is_near
-					= (analog(PORT_SHARP_L) > TURNDISTANCE) ? TRUE : FALSE;
-			sensor_right_wall_is_near
-					= (analog(PORT_SHARP_R) > TURNDISTANCE) ? TRUE : FALSE;
+			sensor_left_wall_is_near = (analog(PORT_SHARP_L)
+					> CALIBRATE_DISTANCE_FAR) ? TRUE : FALSE;
+			sensor_right_wall_is_near = (analog(PORT_SHARP_R)
+					> CALIBRATE_DISTANCE_FAR) ? TRUE : FALSE;
 			sensor_right_wall_detector = (sensor_east_sharp
 					>= SHARP_O_WALL_DETECTED) ? TRUE : FALSE;
 			sensor_left_wall_detector = (sensor_west_sharp
@@ -138,9 +137,9 @@ void AksenMain(void) {
 			} else if (state_calibrating_the_wall) {
 				if (internal_sharp_difference < MAX_WALKING_DIFFERENCE) {
 					reset_states();
-					if (sensor_east_sharp > sensor_west_sharp){
+					if (sensor_east_sharp > sensor_west_sharp) {
 						state_walking_right = TRUE;
-					}else{
+					} else {
 						state_walking_left = TRUE;
 					}
 				}
@@ -238,26 +237,22 @@ void AksenMain(void) {
 				} else {
 					dir_n(10);
 				}
-				//				if (analog(PORT_SHARP_L) > TURNDISTANCE) {
-				//					dir_nw(5);
-				//				}else if (analog(PORT_SHARP_R) > TURNDISTANCE) {
-				//					dir_nw(5);
-				//				}//if
+
 			} else if (state_running_to_the_wall) {
-				// TODO: avoid own goal while searching for wall
-				// TODO: intelligent search for next wall
 				dir_n(5);
-				//				if (analog(PORT_SHARP_L) > TURNDISTANCE) {
-				//					dir_nw(5);
-				//				}else if (analog(PORT_SHARP_R) > TURNDISTANCE) {
-				//					dir_nw(5);
-				//}//if
 
 			} else if (state_calibrating_the_wall) {
-				if (sensor_left_sharp > sensor_right_sharp) {
-					trn_cc(2);
+				if (sensor_left_sharp > CALIBRATE_DISTANCE_NEAR
+						|| sensor_right_sharp > CALIBRATE_DISTANCE_NEAR) {
+					if (sensor_left_sharp < sensor_right_sharp) {
+						trn_c(5);
+					} else {
+						trn_cc(5);
+					}
+				} else if (sensor_left_sharp < sensor_right_sharp) {
+					trn_c_no(5);
 				} else {
-					trn_c(2);
+					trn_cc_nw(5);
 				}
 
 			} else if (state_walking_left) {
