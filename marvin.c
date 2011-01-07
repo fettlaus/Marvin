@@ -238,14 +238,7 @@ void AksenMain(void) {
 				////////////////////////
 				// State 3
 			} else if (state_calibrating_the_wall) {
-				if (sensor_left_sharp > CALIBRATE_DISTANCE_NEAR
-						|| sensor_right_sharp > CALIBRATE_DISTANCE_NEAR) {
-					if (sensor_left_sharp < sensor_right_sharp) {
-						trn_c(5);
-					} else {
-						trn_cc(5);
-					}
-				} else if (sensor_left_sharp < sensor_right_sharp) {
+				if (sensor_left_sharp < sensor_right_sharp) {
 					trn_c_no(5);
 				} else {
 					trn_cc_nw(5);
