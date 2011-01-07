@@ -110,19 +110,21 @@ void AksenMain(void) {
 			////////////////////////////////
 			//
 			//  ZUSTAENDE
+			//
 			////////////////////////////////
 
-			// fallback if we lost the ball
+			////////////////////////////////////
+			// Fallback if we lost the ball
 			if (!sensor_i_have_the_ball) {
 				change_state(state_searching_ball);
 
 				/////////////////////////////
-				// Suche den Ball!
+				// 1. Suche den Ball!
 			} else if (state_searching_ball && sensor_i_have_the_ball) {
 				change_state(state_running_to_the_wall);
 
 				////////////////////////////
-				// Laufe auf die Wand zu
+				// 2. Laufe auf die Wand zu
 			} else if (state_running_to_the_wall) {
 				// found wall to the left, walk right
 				if (sensor_left_wall_is_near || sensor_right_wall_is_near) {
@@ -130,7 +132,7 @@ void AksenMain(void) {
 				}
 
 				//////////////////////////////////
-				// An der Wand ausrichten
+				// 3. An der Wand ausrichten
 			} else if (state_calibrating_the_wall) {
 				if (internal_sharp_difference < MAX_WALKING_DIFFERENCE) {
 					if (sensor_east_sharp > sensor_west_sharp) {
@@ -139,8 +141,9 @@ void AksenMain(void) {
 						change_state(state_walking_left);
 					}
 				}
+
 				//////////////////////////////////////
-				// Laufe nach links an der Wand entlang
+				// 4.A Laufe nach links an der Wand entlang
 			} else if (state_walking_left) {
 				// TODO: Wait 1.5 - 2 sec and check distance to wall again
 				// change direction if other bot or own goal detected
@@ -153,7 +156,7 @@ void AksenMain(void) {
 				}
 
 				///////////////////////////////////////
-				// Laufe nach rechts an der Wand entlang
+				// 4.B Laufe nach rechts an der Wand entlang
 			} else if (state_walking_right) {
 
 				// change direction if other bot or own goal detected
@@ -166,7 +169,7 @@ void AksenMain(void) {
 				}
 
 				//////////////////////////////////////////////////
-				// Warte darauf, dass Hindernis links verschwindet
+				// 5.A Warte darauf, dass Hindernis links verschwindet
 			} else if (state_obstacle_left_wait) {
 				if (!internal_obstacle_timeout) {
 					if (sensor_left_wall_detector) {
@@ -179,7 +182,7 @@ void AksenMain(void) {
 				}
 
 				///////////////////////////////////////////////////
-				// Warte darauf, dass Hindernis rechts verschwindet
+				// 5.B Warte darauf, dass Hindernis rechts verschwindet
 			} else if (state_obstacle_right_wait) {
 				if (!internal_obstacle_timeout) {
 					if (sensor_right_wall_detector) {
@@ -192,12 +195,12 @@ void AksenMain(void) {
 				}
 
 				/////////////////////////////////////
-				// Drehe dich um das Hindernis links
+				// 6.A Drehe dich um das Hindernis links
 			} else if (state_obstacle_left_turn && !internal_obstacle_timeout) {
 				change_state(state_walking_left);
 
 				/////////////////////////////////////
-				//Drehe dich um das Hindernis rechts
+				// 6.B Drehe dich um das Hindernis rechts
 			} else if (state_obstacle_right_turn && !internal_obstacle_timeout) {
 				change_state(state_walking_right);
 			}
@@ -205,8 +208,11 @@ void AksenMain(void) {
 			////////////////////////////////
 			//
 			//  AKTORIK
+			//
 			////////////////////////////////
 
+			////////////////////////
+			// State 1
 			if (state_searching_ball) {
 				if (sensor_ball_detected_n) {
 					sensor_ball_detected_no = 0;
@@ -224,9 +230,13 @@ void AksenMain(void) {
 					dir_n(10);
 				}
 
+				////////////////////////
+				// State 2
 			} else if (state_running_to_the_wall) {
 				dir_n(5);
 
+				////////////////////////
+				// State 3
 			} else if (state_calibrating_the_wall) {
 				if (sensor_left_sharp > CALIBRATE_DISTANCE_NEAR
 						|| sensor_right_sharp > CALIBRATE_DISTANCE_NEAR) {
@@ -241,6 +251,8 @@ void AksenMain(void) {
 					trn_cc_nw(5);
 				}
 
+				////////////////////////
+				// State 4.A
 			} else if (state_walking_left) {
 				if (sensor_left_sharp < MAX_WALKING_DISTANCE) {
 					dir_nw(4);
@@ -250,6 +262,8 @@ void AksenMain(void) {
 					dir_w(6);
 				}
 
+				////////////////////////
+				// State 4.B
 			} else if (state_walking_right) {
 				if (sensor_left_sharp < MAX_WALKING_DISTANCE) {
 					dir_no(4);
@@ -259,17 +273,31 @@ void AksenMain(void) {
 					dir_o(6);
 				}
 
+				////////////////////////
+				// State 5.A & State 5.B
 			} else if (state_obstacle_left_wait || state_obstacle_right_wait) {
 				dir_stop();
+
+				////////////////////////
+				// State 6.A
 			} else if (state_obstacle_left_turn) {
 				trn_cc(5);
+
+				////////////////////////
+				// State 6.B
 			} else if (state_obstacle_right_turn) {
 				trn_c(5);
 			}
 			// TODO: why is this here?
 			sleep(8);
 
-		}//if dip pin1
+		}
+
+		////////////////////////////
+		//
+		// DEBUG
+		//
+		////////////////////////////
 		if (!dip_pin(2) && !dip_pin(3)) {
 			lcd_cls();
 			lcd_puts("W:");
@@ -300,10 +328,10 @@ void AksenMain(void) {
 			lcd_puts("G:");
 			lcd_ubyte(sensor_i_have_the_goal);
 			sleep(100);
-		}//if dip pin 2&3
-	}//while
+		}
+	}
 
-}//main
+}
 
 void ir_detector() {
 #define IR_PROC_WAIT (10 * 2 * ir_goal_frequency)
