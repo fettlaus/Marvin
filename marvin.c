@@ -114,33 +114,29 @@ void AksenMain(void) {
 
 			// fallback if we lost the ball
 			if (!sensor_i_have_the_ball) {
-				reset_states();
-				state_searching_ball = TRUE;
+				change_state(state_searching_ball);
 
 				/////////////////////////////
 				// Suche den Ball!
 			} else if (state_searching_ball && sensor_i_have_the_ball) {
-				reset_states();
-				state_running_to_the_wall = TRUE;
+				change_state(state_running_to_the_wall);
 
 				////////////////////////////
 				// Laufe auf die Wand zu
 			} else if (state_running_to_the_wall) {
 				// found wall to the left, walk right
 				if (sensor_left_wall_is_near || sensor_right_wall_is_near) {
-					reset_states();
-					state_calibrating_the_wall = TRUE;
+					change_state(state_calibrating_the_wall);
 				}
 
 				//////////////////////////////////
 				// An der Wand ausrichten
 			} else if (state_calibrating_the_wall) {
 				if (internal_sharp_difference < MAX_WALKING_DIFFERENCE) {
-					reset_states();
 					if (sensor_east_sharp > sensor_west_sharp) {
-						state_walking_right = TRUE;
+						change_state(state_walking_right);
 					} else {
-						state_walking_left = TRUE;
+						change_state(state_walking_left);
 					}
 				}
 				//////////////////////////////////////
@@ -149,13 +145,11 @@ void AksenMain(void) {
 				// TODO: Wait 1.5 - 2 sec and check distance to wall again
 				// change direction if other bot or own goal detected
 				if (sensor_left_wall_detector) {
-					reset_states();
-					state_obstacle_left_wait = TRUE;
+					change_state(state_obstacle_left_wait);
 					timer_reset(5, OBSTACLE_WAIT_TIMEOUT,
 							&internal_obstacle_timeout);
 				} else if (ir_goal_detected) {
-					reset_states();
-					state_walking_right = TRUE;
+					change_state(state_walking_right);
 				}
 
 				///////////////////////////////////////
@@ -164,13 +158,11 @@ void AksenMain(void) {
 
 				// change direction if other bot or own goal detected
 				if (sensor_right_wall_detector) {
-					reset_states();
-					state_obstacle_right_wait = TRUE;
+					change_state(state_obstacle_right_wait);
 					timer_reset(5, OBSTACLE_WAIT_TIMEOUT,
 							&internal_obstacle_timeout);
 				} else if (ir_goal_detected) {
-					reset_states();
-					state_walking_left = TRUE;
+					change_state(state_walking_left);
 				}
 
 				//////////////////////////////////////////////////
@@ -178,13 +170,11 @@ void AksenMain(void) {
 			} else if (state_obstacle_left_wait) {
 				if (!internal_obstacle_timeout) {
 					if (sensor_left_wall_detector) {
-						reset_states();
-						state_obstacle_left_turn = TRUE;
+						change_state(state_obstacle_left_turn);
 						timer_reset(5, OBSTACLE_TURN_TIMEOUT,
 								&internal_obstacle_timeout);
 					} else {
-						reset_states();
-						state_walking_left = TRUE;
+						change_state(state_walking_left);
 					}
 				}
 
@@ -193,27 +183,23 @@ void AksenMain(void) {
 			} else if (state_obstacle_right_wait) {
 				if (!internal_obstacle_timeout) {
 					if (sensor_right_wall_detector) {
-						reset_states();
-						state_obstacle_right_turn = TRUE;
+						change_state(state_obstacle_right_turn);
 						timer_reset(5, OBSTACLE_TURN_TIMEOUT,
 								&internal_obstacle_timeout);
 					} else {
-						reset_states();
-						state_walking_right = TRUE;
+						change_state(state_walking_right);
 					}
 				}
 
 				/////////////////////////////////////
 				// Drehe dich um das Hindernis links
 			} else if (state_obstacle_left_turn && !internal_obstacle_timeout) {
-				reset_states();
-				state_walking_left = TRUE;
+				change_state(state_walking_left);
 
 				/////////////////////////////////////
 				//Drehe dich um das Hindernis rechts
 			} else if (state_obstacle_right_turn && !internal_obstacle_timeout) {
-				reset_states();
-				state_walking_right = TRUE;
+				change_state(state_walking_right);
 			}
 
 			////////////////////////////////
