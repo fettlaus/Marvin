@@ -73,12 +73,16 @@ void AksenMain(void) {
 			}
 
 			//Ball NO Erkennung
-			if (analog(PORT_BALL_DETECTOR_NO) < MAX_ANALOG_VALUE_DETECTOR_NO) {
+			if ((analog(PORT_BALL_DETECTOR_NO) < MAX_ANALOG_VALUE_DETECTOR_NO)
+					|| (analog(PORT_BALL_DETECTOR_NO_EXT)
+							< MAX_ANALOG_VALUE_DETECTOR_NO_EXT)) {
 				timer_reset(2, BALL_NO_TIMEOUT, &sensor_ball_detected_no);
 			}
 
 			//Ball NW Erkennung
-			if (analog(PORT_BALL_DETECTOR_NW) < MAX_ANALOG_VALUE_DETECTOR_NW) {
+			if ((analog(PORT_BALL_DETECTOR_NW) < MAX_ANALOG_VALUE_DETECTOR_NW)
+				|| (analog(PORT_BALL_DETECTOR_NW_EXT)
+					< MAX_ANALOG_VALUE_DETECTOR_NW_EXT)) {
 				timer_reset(3, BALL_NW_TIMEOUT, &sensor_ball_detected_nw);
 			}
 
@@ -320,6 +324,10 @@ void AksenMain(void) {
 			lcd_ubyte(sensor_i_have_the_ball);
 			lcd_puts("G:");
 			lcd_ubyte(sensor_i_have_the_goal);
+			lcd_puts(" ");
+			lcd_ubyte(analog(PORT_BALL_DETECTOR_NW_EXT));
+			lcd_puts(" ");
+			lcd_ubyte(analog(PORT_BALL_DETECTOR_NO_EXT));
 			sleep(100);
 		}
 	}
