@@ -44,14 +44,16 @@ unsigned char pid_process_1, pid_process_2;
 unsigned char ir_goal_frequency = 4;
 void AksenMain(void) {
 	pid_process_1 = process_start(ir_detector, 10);
-
+	// Einstellung der Torfrequenz
+	if (dip_pin(0) == 1) {
+		ir_goal_frequency = 4;
+		lcd_puts("125 Hz");
+	} else {
+		ir_goal_frequency = 5;
+		lcd_puts("100 Hz");
+	}
 	while (1) {
-		// Einstellung der Torfrequenz
-		if (dip_pin(0) == 1) {
-			ir_goal_frequency = 4;
-		} else {
-			ir_goal_frequency = 5;
-		}
+
 
 		if (dip_pin(1)) {
 
