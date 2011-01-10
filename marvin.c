@@ -28,11 +28,13 @@ unsigned char sensor_west_sharp = 0;
 unsigned char sensor_east_sharp = 0;
 unsigned char internal_sharp_difference = 0;
 unsigned char internal_obstacle_timeout = 0;
+unsigned char internal_initial_found_ball = FALSE;
 
 //main states
+unsigned char state_start = TRUE;
+unsigned char state_searching_ball = FALSE;
 unsigned char state_walking_right = FALSE;
 unsigned char state_walking_left = FALSE;
-unsigned char state_searching_ball = TRUE;
 unsigned char state_running_to_the_wall = FALSE;
 unsigned char state_calibrating_the_wall = FALSE;
 unsigned char state_obstacle_left_wait = FALSE;
@@ -53,7 +55,6 @@ void AksenMain(void) {
 		lcd_puts("100 Hz");
 	}
 	while (1) {
-
 
 		if (dip_pin(1)) {
 
@@ -83,8 +84,8 @@ void AksenMain(void) {
 
 			//Ball NW Erkennung
 			if ((analog(PORT_BALL_DETECTOR_NW) < MAX_ANALOG_VALUE_DETECTOR_NW)
-				|| (analog(PORT_BALL_DETECTOR_NW_EXT)
-					< MAX_ANALOG_VALUE_DETECTOR_NW_EXT)) {
+					|| (analog(PORT_BALL_DETECTOR_NW_EXT)
+							< MAX_ANALOG_VALUE_DETECTOR_NW_EXT)) {
 				timer_reset(3, BALL_NW_TIMEOUT, &sensor_ball_detected_nw);
 			}
 
@@ -121,13 +122,22 @@ void AksenMain(void) {
 
 			////////////////////////////////////
 			// Fallback if we lost the ball
-			if (!sensor_i_have_the_ball) {
+			if (!sensor_i_have_the_ball && !state_start) {
 				change_state(state_searching_ball);
 
 				/////////////////////////////
+				// 0. Startzustand
+			} else if (state_start) {
+				if (internal_initial_found_ball && !sensor_i_have_the_ball) {
+					change_state(state_searching_ball);
+				}
+
+				/////////////////////////////
 				// 1. Suche den Ball!
-			} else if (state_searching_ball && sensor_i_have_the_ball) {
-				change_state(state_running_to_the_wall);
+			} else if (state_searching_ball) {
+				if (sensor_i_have_the_ball) {
+					change_state(state_running_to_the_wall);
+				}
 
 				////////////////////////////
 				// 2. Laufe auf die Wand zu
@@ -218,8 +228,21 @@ void AksenMain(void) {
 			////////////////////////////////
 
 			////////////////////////
-			// State 1
-			if (state_searching_ball) {
+			// State 0
+			if (state_start) {
+				if (sensor_i_have_the_ball) {
+					internal_initial_found_ball = TRUE;
+					if (sensor_left_sharp > sensor_right_sharp) {
+						trn_c(8);
+					} else {
+						trn_cc(8);
+					}
+				} else {
+					dir_n(10);
+				}
+				////////////////////////
+				// State 1
+			} else if (state_searching_ball) {
 				if (sensor_ball_detected_n) {
 					sensor_ball_detected_no = 0;
 					sensor_ball_detected_nw = 0;
@@ -387,6 +410,7 @@ void ir_detector() {
 }
 
 void reset_states() {
+	state_start = FALSE;
 	state_searching_ball = FALSE;
 	state_running_to_the_wall = FALSE;
 	state_walking_right = FALSE;
