@@ -49,10 +49,14 @@ void AksenMain(void) {
 	// Einstellung der Torfrequenz
 	if (dip_pin(0) == 1) {
 		ir_goal_frequency = 4;
-		lcd_puts("125 Hz");
+		lcd_puts("Eigen: 125 Hz");
+		lcd_setxy(1,0);
+		lcd_puts("Gegner: 100 Hz");
 	} else {
 		ir_goal_frequency = 5;
-		lcd_puts("100 Hz");
+		lcd_puts("Eigen: 100 Hz");
+		lcd_setxy(1,0);
+		lcd_puts("Gegner: 125 Hz");
 	}
 	while (1) {
 
