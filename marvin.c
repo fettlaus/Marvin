@@ -212,13 +212,16 @@ void AksenMain(void) {
 
 				/////////////////////////////////////
 				// 6.A Drehe dich um das Hindernis links
-			} else if (state_obstacle_left_turn && !internal_obstacle_timeout) {
-				change_state(state_walking_left);
+			} else if (state_obstacle_left_turn) {
+				if(sensor_right_wall_detector || !internal_obstacle_timeout)
+					change_state(state_walking_left);
+
 
 				/////////////////////////////////////
 				// 6.B Drehe dich um das Hindernis rechts
-			} else if (state_obstacle_right_turn && !internal_obstacle_timeout) {
-				change_state(state_walking_right);
+			} else if (state_obstacle_right_turn) {
+				if(sensor_left_wall_detector || !internal_obstacle_timeout)
+					change_state(state_walking_right);
 			}
 
 			////////////////////////////////
@@ -267,10 +270,10 @@ void AksenMain(void) {
 				////////////////////////
 				// State 3
 			} else if (state_calibrating_the_wall) {
-				if (sensor_left_sharp < sensor_right_sharp) {
-					trn_c_no(5);
+				if(sensor_left_sharp < sensor_right_sharp) {
+					dir_trn_no(6);
 				} else {
-					trn_cc_nw(5);
+					dir_trn_nw(6);
 				}
 
 				////////////////////////
@@ -303,12 +306,12 @@ void AksenMain(void) {
 				////////////////////////
 				// State 6.A
 			} else if (state_obstacle_left_turn) {
-				trn_cc(5);
+				trn_cc(3);
 
 				////////////////////////
 				// State 6.B
 			} else if (state_obstacle_right_turn) {
-				trn_c(5);
+				trn_c(3);
 			}
 			// TODO: why is this here?
 			sleep(8);
