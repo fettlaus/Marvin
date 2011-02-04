@@ -31,8 +31,8 @@ unsigned char internal_obstacle_timeout = 0;
 unsigned char internal_initial_found_ball = FALSE;
 
 //main states
-unsigned char state_start = TRUE;
-unsigned char state_searching_ball = FALSE;
+unsigned char state_start = FALSE;
+unsigned char state_searching_ball = TRUE;
 unsigned char state_walking_right = FALSE;
 unsigned char state_walking_left = FALSE;
 unsigned char state_running_to_the_wall = FALSE;
@@ -104,9 +104,9 @@ void AksenMain(void) {
 			sensor_west_sharp = analog(PORT_SHARP_W);
 
 			// Sensors
-			sensor_left_wall_is_near = (analog(PORT_SHARP_L)
+			sensor_left_wall_is_near = (sensor_left_sharp
 					> CALIBRATE_DISTANCE_FAR) ? TRUE : FALSE;
-			sensor_right_wall_is_near = (analog(PORT_SHARP_R)
+			sensor_right_wall_is_near = (sensor_right_sharp
 					> CALIBRATE_DISTANCE_FAR) ? TRUE : FALSE;
 			sensor_right_wall_detector = (sensor_east_sharp
 					>= SHARP_O_WALL_DETECTED) ? TRUE : FALSE;
@@ -286,7 +286,7 @@ void AksenMain(void) {
 				if (sensor_left_sharp < MAX_WALKING_DISTANCE) {
 					dir_nw(4);
 				} else if (sensor_left_sharp > MIN_WALKING_DISTANCE) {
-					dir_sw(4);
+					dir_sw(4); //!!!
 				} else {
 					dir_w(6);
 				}
@@ -295,7 +295,7 @@ void AksenMain(void) {
 				// State 4.B
 			} else if (state_walking_right) {
 				if (sensor_left_sharp < MAX_WALKING_DISTANCE) {
-					dir_no(4);
+					dir_no(4); //!!!
 				} else if (sensor_left_sharp > MIN_WALKING_DISTANCE) {
 					dir_so(4);
 				} else {
